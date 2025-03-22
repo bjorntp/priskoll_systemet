@@ -1,11 +1,11 @@
 //importing modules
-const express = require('express')
-const updateBeers = require('../jobs/updateBeers')
-const { getWhite, getRed, getRestWine } = require('../jobs/updateWines')
-const updateSpirits = require('../jobs/updateSpirits')
-const readDataFromJSON = require('../jobs/readFile')
+import { Router } from 'express'
+import updateBeers from '../jobs/updateBeers'
+import { getWhite, getRed, getRestWine } from '../jobs/updateWines'
+import updateSpirits from '../jobs/updateSpirits'
+import readDataFromJSON from '../jobs/readFile'
 
-const router = express.Router()
+const router = Router()
 
 router.post('/beer', updateBeers)
 router.post('/white', getWhite)
@@ -14,4 +14,4 @@ router.post('/rest', getRestWine)
 router.post('/spirit', updateSpirits);
 router.post('/old', readDataFromJSON);
 
-module.exports = router
+export default router

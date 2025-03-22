@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require('../config/db');
-const PriceHistory = require('./PriceHistory')
-const OldPrices = require('./OldPrices')
+const sequelize = require('../config/db').default;
+const PriceHistory = require('./PriceHistory').default
+const OldPrices = require('./OldPrices').default.default
 
 const Product = sequelize.define('Product', {
   alcoholPercentage: { type: DataTypes.FLOAT, allowNull: true },
@@ -71,6 +71,8 @@ const Product = sequelize.define('Product', {
   vintage: { type: DataTypes.STRING, allowNull: true },
   volume: { type: DataTypes.FLOAT, allowNull: true },
   volumeText: { type: DataTypes.STRING, allowNull: true },
+  enabled: { type: DataTypes.BOOLEAN, allowNull: true },
+  lastSeen: { type: DataTypes.DATE, allowNull: true }
 }, {
   timestamps: true, // Adds createdAt and updatedAt fields
 });

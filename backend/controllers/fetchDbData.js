@@ -1,12 +1,12 @@
-const sequelize = require('../config/db');
-const Product = require('../models/Product')
-const PriceHistory = require('../models/PriceHistory');
-const OldPrices = require('../models/OldPrices')
-const { where, Op } = require('sequelize');
+import { fn, col } from '../config/db';
+import Product, { findAll } from '../models/Product';
+import { findAll as _findAll } from '../models/PriceHistory';
+import OldPrices, { findAll as __findAll } from '../models/OldPrices';
+import { Op } from 'sequelize';
 
-const getApk = async (req, res) => {
+const getApk = async (_req, res) => {
   try {
-    const productsApk = await Product.findAll({
+    const productsApk = await findAll({
       order: [['apk', 'DESC']],
       limit: 50,
     });
@@ -21,13 +21,13 @@ const getApk = async (req, res) => {
   }
 }
 
-const getDates = async (req, res) => {
+const getDates = async (_req, res) => {
   try {
-    const uniqueUpdatedAt = await OldPrices.findAll({
+    const uniqueUpdatedAt = await __findAll({
       attributes: [
-        [sequelize.fn('DATE', sequelize.col('updatedAt')), 'updatedAt']
+        [fn('DATE', col('updatedAt')), 'updatedAt']
       ],
-      group: [sequelize.fn('DATE', sequelize.col('updatedAt'))],
+      group: [fn('DATE', col('updatedAt'))],
       raw: true,
     })
     const dates = uniqueUpdatedAt.map(row => row.updatedAt);
@@ -53,7 +53,7 @@ const getPriceChangesLower = async (req, res) => {
     } else if (sort === "date") {
       order = [[{ model: OldPrices }, "updatedAt", "ASC"]];
     }
-    const productsLowered = await PriceHistory.findAll(
+    const productsLowered = await _findAll(
       {
         where: {
           changePercentage: {
@@ -95,7 +95,7 @@ const getPriceChangesRaise = async (req, res) => {
     } else if (sort == "category") {
       order = [[{ model: Product }, 'categoryLevel1']]
     }
-    const productsLowered = await PriceHistory.findAll(
+    const productsLowered = await _findAll(
       {
         where: {
           changePercentage: {
@@ -121,7 +121,7 @@ const getPriceChangesRaise = async (req, res) => {
   }
 }
 
-module.exports = {
+export default {
   getApk,
   getPriceChangesLower,
   getPriceChangesRaise,

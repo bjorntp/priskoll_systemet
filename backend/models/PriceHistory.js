@@ -1,7 +1,6 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require('../config/db');
+import { define } from '../config/db';
 
-const PriceHistory = sequelize.define('PriceHistory', {
+const PriceHistory = define('PriceHistory', {
   productId: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -21,4 +20,4 @@ const PriceHistory = sequelize.define('PriceHistory', {
   }
 });
 
-module.exports = PriceHistory;
+export default PriceHistory;

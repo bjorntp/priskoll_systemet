@@ -1,17 +1,17 @@
-const PriceHistory = require('../models/PriceHistory');
-const Product = require('../models/Product');
-const fetchProductData = require('./fetchProductData');
-const OldPrices = require('../models/OldPrices')
+import { findOne, create } from '../models/PriceHistory';
+import { findOne as _findOne, bulkCreate } from '../models/Product';
+import fetchProductData from './fetchProductData';
+import { create as _create } from '../models/OldPrices';
 
 const addData = async (element) => {
-  const dbProduct = await Product.findOne({ where: { productId: element.productId } });
+  const dbProduct = await _findOne({ where: { productId: element.productId } });
   if (dbProduct) {
     const percentage = element.price / dbProduct.price;
     if (dbProduct.price !== element.price) {
-      const history = await PriceHistory.findOne({ where: { productId: element.productId } });
+      const history = await findOne({ where: { productId: element.productId } });
 
       if (history) {
-        await OldPrices.create({
+        await _create({
           oldPrice: history.newPrice,
           newPrice: element.price,
           updatedAt: new Date(),
@@ -22,25 +22,31 @@ const addData = async (element) => {
         history.changePercentage = percentage;
         await history.save();
       } else {
-        const newHistory = await PriceHistory.create({
+        const newHistory = await create({
           productId: element.productId,
           oldPrice: dbProduct.price,
           newPrice: element.price,
           changePercentage: percentage,
         });
-        await OldPrices.create({
+        await _create({
           oldPrice: dbProduct.price,
           newPrice: element.price,
           updatedAt: new Date(),
           priceHistoryId: newHistory.id,
         });
       }
-      await dbProduct.update(element);
+      await dbProduct.update({
+        ...element, lastSeen: new Date(), enabled: true
+      });
+    } else {
+      await dbProduct.update({ lastSeen: new Date() })
     }
     return null;
   } else {
     const apk = (element.volume * (element.alcoholPercentage / 100)) / element.price;
     element.apk = apk;
+    element.lastSeen = new Date();
+    element.enabled = true;
     return element;
   }
 }
@@ -55,9 +61,9 @@ const updateData = async (args) => {
       newElementsArray.push(x)
     }
   }
-  Product.bulkCreate(newElementsArray, {
+  bulkCreate(newElementsArray, {
     ignoreDuplicates: true,
   });
 }
 
-module.exports = updateData;;
+export default updateData;

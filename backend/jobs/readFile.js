@@ -1,14 +1,13 @@
-const PriceHistory = require('../models/PriceHistory');
-const Product = require('../models/Product');
-const fetchProductData = require('../controllers/fetchProductData');
-const parsedData = require('../systembolagetapi/archived_data.json')
+import { findOne, create } from '../models/PriceHistory';
+import { findOne as _findOne, bulkCreate } from '../models/Product';
+import parsedData from '../systembolagetapi/archived_data.json';
 
 const addData = async (element) => {
-  const dbProduct = await Product.findOne({ where: { productId: element.productId } });
+  const dbProduct = await _findOne({ where: { productId: element.productId } });
   if (dbProduct) {
     const percentage = element.price / dbProduct.price;
     if (dbProduct.price !== element.price) {
-      const history = await PriceHistory.findOne({ where: { productId: element.productId } });
+      const history = await findOne({ where: { productId: element.productId } });
       if (history) {
         history.oldPrices = [{ oldPrice: history.newPrice, newPrice: element.price, updatedAt: new Date() }, ...history.oldPrices]
         history.oldPrice = history.newPrice;
@@ -16,7 +15,7 @@ const addData = async (element) => {
         history.changePercentage = percentage;
         await history.save();
       } else {
-        await PriceHistory.create({
+        await create({
           productId: element.productId,
           oldPrices: [
             { oldPrice: dbProduct.price, newPrice: element.price, updatedAt: new Date() }
@@ -46,9 +45,9 @@ const readDataFromJSON = async () => {
       newElementsArray.push(x)
     }
   }
-  Product.bulkCreate(newElementsArray, {
+  bulkCreate(newElementsArray, {
     ignoreDuplicates: true,
   });
 }
 
-module.exports = readDataFromJSON;
+export default readDataFromJSON;

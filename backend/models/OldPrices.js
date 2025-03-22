@@ -1,7 +1,6 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require('../config/db');
+import { define } from '../config/db';
 
-const OldPrices = sequelize.define('OldPrices', {
+const OldPrices = define('OldPrices', {
   newPrice: {
     type: DataTypes.FLOAT,
     allowNull: false,
@@ -17,4 +16,4 @@ const OldPrices = sequelize.define('OldPrices', {
   },
 });
 
-module.exports = OldPrices;
+export default OldPrices;

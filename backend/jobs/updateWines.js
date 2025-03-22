@@ -1,6 +1,6 @@
-const updateData = require('../controllers/updateData')
+import updateData from '../controllers/updateData';
 
-const getRestWine = async (req, res) => {
+const getRestWine = async (_req, res) => {
   try {
     console.log("Updating non red and white wine data")
     let argsMousserande = ['assortment', '--category', "Vin", '--subcategory', 'Mousserande vin'];
@@ -27,7 +27,7 @@ const getRestWine = async (req, res) => {
   }
 }
 
-const getWhite = async (req, res) => {
+const getWhite = async (_req, res) => {
   try {
     console.log("Updating white wine data")
     let argsVitt = ['assortment', '--category', "Vin", '--subcategory', 'Vitt vin'];
@@ -37,7 +37,7 @@ const getWhite = async (req, res) => {
     return res.status(500).send(error)
   }
 }
-const getRed = async (req, res) => {
+const getRed = async (_req, res) => {
   try {
     console.log("Updating red wine data")
     let argsRott = ['assortment', '--category', "Vin", '--subcategory', 'Rött vin'];
@@ -48,7 +48,7 @@ const getRed = async (req, res) => {
   }
 }
 
-module.exports = {
+export default {
   getRed,
   getRestWine,
   getWhite
